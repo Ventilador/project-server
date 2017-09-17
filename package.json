@@ -1,0 +1,22 @@
+{
+  "name": "project-server",
+  "version": "1.0.0",
+  "description": "Project server",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ventilador/project-server.git"
+  },
+  "keywords": [
+    "server"
+  ],
+  "author": "Ventilador",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ventilador/project-server/issues"
+  },
+  "homepage": "https://github.com/Ventilador/project-server#readme"
+}
