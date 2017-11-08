@@ -1,0 +1,12 @@
+declare namespace components.alert {
+  interface IAlertService {
+    showAlertSucces(message: string, callbackClose?: () => void, msToClose?: number);
+    showAlertWarning(message: string, callbackClose?: () => void, msToClose?: number);
+    showAlertError(shortText: string, longText: string, callbackClose?: () => void, hideFooter?: boolean);
+    showAlertErrors(shortText: string, errorsTexts: string[], callbackClose?: () => void);
+    showAlertSuccessWithAction(message: string, action: () => void, actionText: string, callbackClose?: () => void, msToClose?: number);
+
+    closeAlert();
+  }
+}
+

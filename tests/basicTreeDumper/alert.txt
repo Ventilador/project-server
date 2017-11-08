@@ -1,0 +1,259 @@
+@import (reference) './../../index.less';
+
+.proteus-alert {
+
+  .entity-name { font-weight: 600;}
+
+  .common-border-radius(0);
+  position: fixed;
+  top: 90px;
+  z-index: 9999;
+  left: 38%;
+  width: 400px;
+
+  .alert {
+    padding: 6px 15px 2px;
+    -webkit-box-shadow: 1px 1px 2px 0 rgba(146,146,146,1);
+    -moz-box-shadow: 1px 1px 2px 0 rgba(146,146,146,1);
+    box-shadow: 1px 1px 2px 0 rgba(146,146,146,1);
+    .common-border-radius(0);
+  }
+
+  .alert-success {
+    .addBorderWithOtherColor(@success-color);
+    .common-border-radius(0);
+    background: @success-background-color;
+    padding: 10px 15px;
+    line-height: 18px;
+  }
+
+  .alert-success .main-message p span {
+    margin-left: 20px;
+  }
+
+  .alert-success .fa-check-circle-o {
+    width: 20px;
+    height: 28px;
+    margin-top: 2px;
+    color: inherit !important;
+  }
+
+  .alert-danger {
+    .addBorderWithOtherColor(@error-color-border);
+    .common-border-radius(0);
+    background: @error-color-background;
+    width: 600px;
+    left: 34.6%;
+
+    .main-message-wrapper span {
+      color: @error-dark-color!important;}
+  }
+
+  .alert-danger p i {
+    width: 20px;
+    height: 40px;
+    margin-top: 2px;
+  }
+
+  .alert-danger .fa-exclamation-circle {
+    color: @error-dark-color!important;
+  }
+
+  p.main-message {
+    font-size: 15px;
+    line-height: 19px;
+    i.main-icon{
+      position: absolute;
+      cursor: auto;
+    }
+  }
+  .main-message-wrapper{
+    .text-overflow(ellipsis);
+    overflow: hidden;
+    padding-left: 20px;
+
+    .alert-short-text::first-letter {
+      text-transform: uppercase;
+    }
+  }
+
+  .add-padding-bottom {
+    padding-bottom: 5px;
+  }
+
+  .alert-danger .ng-binding i {
+    padding: 0 6px 0 0;
+  }
+
+  .alert-dismissible .close {
+    .icon-main-style;
+    position: relative;
+    top: 0px;
+    right: 0;
+    text-shadow: none;
+    opacity: 1.0;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .more-info {
+    margin: 15px 0 10px 9px;
+
+    .send-message-container {
+      .common-display-flex;
+      .flex-direction(row);
+      .justify-content(flex-end);
+      margin-right: 17px;
+      margin-top: 0px;
+      padding-top: 10px;
+
+      a {
+        margin: 0;
+      }
+
+      &.next-to-info {
+        margin-top: -20px;
+        padding-top: 0px;
+      }
+
+    }
+
+    .message-to-admin {
+      .common-display-flex;
+      .flex-direction(column);
+
+      .message-text {
+        .more-infotext;
+        .addBorderWithOtherColor(@gray);
+      }
+
+      .buttons-container {
+        .common-display-flex;
+        .flex-direction(row);
+        .justify-content(flex-end);
+        margin-right: 17px;
+        margin-bottom: 15px;
+
+        .cancel {
+          .proteus-cancel-button;
+        }
+
+        .send {
+          .proteus-action-button(@gray-dark, @gray-ultra-dark);
+        }
+      }
+    }
+  }
+
+  .more-info a {
+    font-size: 11px;
+    display: block;
+    margin: 2px 0;
+  }
+
+  .more-info .fa-angle-up {
+    height: 14px;
+    padding-top: 3px;
+    display: inline-block;
+    line-height: 19px;
+    padding-right: 3px;
+  }
+
+  .more-info .fa-angle-down {
+    height: 14px;
+    padding-top: 0;
+    display: inline-block;
+    line-height: 9px;
+    padding-right: 3px;
+  }
+
+  .more-infotext {
+    .addBorderWithOtherColor(@error-color-panel);
+    background: @white;
+    padding: 5px 10px;
+    font-size: 13px;
+    line-height: 17px;
+    margin: 5px 16px 5px 1px;
+    height: auto;
+    overflow-x: hidden;
+    word-wrap: break-word;
+    max-height: 300px;
+    overflow-y: auto;
+    color: @gray-ultra-dark;
+  }
+
+  .report-issue-to-support {
+    text-transform: uppercase;
+  }
+
+  .ask-help {
+    color: @error-dark-color;
+    padding: 0 0 7px 21px;
+    font-size: 14px;
+  }
+  /*-------------------- animation ---------------------- */
+  /* make keyframes that tell the start state and the end state of our object */
+  @-webkit-keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @-moz-keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  .fade-in {
+    opacity: 0;
+    /* make things invisible upon start */
+    -webkit-animation: fadeIn ease-in 1;
+    /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+    -moz-animation: fadeIn ease-in 1;
+    animation: fadeIn ease-in 1;
+    -webkit-animation-fill-mode: forwards;
+    /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+    -moz-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -webkit-animation-duration: 400ms;
+    -moz-animation-duration: 400ms;
+    animation-duration: 400ms;
+  }
+
+  .fade-in.one {
+    -webkit-animation-delay: 200ms;
+    -moz-animation-delay: 200ms;
+    animation-delay: 200ms;
+  }
+}
+
+.proteus-alert-fade-out.ng-leave {
+  transition: all ease-out 400ms;
+}
+
+.proteus-alert-fade-out.ng-leave.ng-leave-active {
+  opacity: 0;
+}
+
+.proteus-alert-fade-out.ng-leave {
+  opacity: 1;
+}

@@ -1,0 +1,189 @@
+import AlertService from './alert.service';
+import { DisposablePromiseService } from './../../core/services/disposablePromise.service';
+import CurrentUser from './../login/currentUser';
+
+export class AlertDirective {
+  /*@ngInject*/
+  public constructor() {
+    let directive = {
+      restrict: 'E',
+      template: require('./alert.template.html'),
+      controller: 'AlertController',
+      controllerAs: 'alertCtrl',
+      scope: {},
+      bindToController: true
+    };
+    return directive;
+  }
+}
+
+export class AlertController {
+  private enableAlert: boolean = false;
+  private shortText: string;
+  private moreInfoMessages: string[];
+  private askHelp: string;
+  private alertClass: string;
+  private showClose: boolean;
+  private descriptionInfo: string;
+  private moreInfoOpen: boolean;
+  private msToClose: number;
+  private callbackClose: () => void;
+  private action: () => void;
+  private actionText: string;
+  private timeOutPromise: ng.IPromise<any>;
+  private iconAlert: string;
+  private iconMoreInfo: string;
+  private messageToAdminOpen: boolean;
+  private messageToAdmin: string;
+
+  /*@ngInject*/
+  public constructor(
+    private $timeout: ng.ITimeoutService,
+    private alertService: AlertService,
+    private disposablePromiseService: DisposablePromiseService,
+    private $scope: ng.IScope,
+    private $translate: ng.translate.ITranslateService,
+    private $log: ng.ILogService,
+    private systemErrorsService: service.systemErrors.GUISystemErrorsService,
+    private currentUser: CurrentUser) {
+    alertService.setAlert(this);
+    this.descriptionInfo = 'COMMON.ALERT_MODAL.MORE_INFO';
+    this.iconMoreInfo = 'fa-angle-down';
+  }
+
+  public showAlertSucces(message: string, callbackClose?: () => void, msToClose?: number, action?: () => void, actionText?: string): void {
+    if (this.enableAlert) {
+      this.closeAlert();
+    }
+
+    this.configureAlert(message, callbackClose, msToClose, null, action, actionText);
+    this.alertClass = 'alert-success';
+    this.iconAlert = 'fa-check-circle-o';
+    this.timeOutPromise = this.disposablePromiseService.timeout(this.closeAlert.bind(this), this.$scope, this.msToClose);
+    this.timeOutPromise.finally(() => {
+      this.timeOutPromise = null;
+    });
+  }
+
+  public showAlertWarning(message: string, callbackClose?: () => void, msToClose?: number): void {
+    if (this.enableAlert) { this.closeAlert(); }
+
+    this.configureAlert(message, callbackClose, msToClose);
+    this.alertClass = 'alert-danger';
+    this.iconAlert = 'fa-exclamation-circle';
+    this.timeOutPromise = this.disposablePromiseService.timeout(this.closeAlert.bind(this), this.$scope, this.msToClose);
+    this.timeOutPromise.finally(() => {
+      this.timeOutPromise = null;
+    });
+  }
+
+  public showAlertError(shortText: string, moreInfoMessages: string[], callbackClose?: () => void): void {
+    if (this.enableAlert) {
+      this.closeAlert();
+    }
+
+    this.configureAlert(shortText, callbackClose, null, moreInfoMessages);
+    this.moreInfoOpen = false;
+    this.askHelp = 'COMMON.ALERT_MODAL.PLEASE_CONTACT_ADMINISTRATOR';
+    this.descriptionInfo = 'COMMON.ALERT_MODAL.MORE_INFO';
+    this.iconMoreInfo = 'fa-angle-down';
+    this.alertClass = 'alert-danger';
+    this.iconAlert = 'fa-exclamation-circle';
+    this.timeOutPromise = null;
+  }
+
+  public changeDescriptionInfo(): void {
+    this.moreInfoOpen = !this.moreInfoOpen;
+    this.iconMoreInfo = this.moreInfoOpen ? 'fa-angle-up' : 'fa-angle-down';
+    this.descriptionInfo = this.moreInfoOpen ? 'COMMON.ALERT_MODAL.LESS_INFO' : 'COMMON.ALERT_MODAL.MORE_INFO';
+  }
+
+  public closeAlert(): void {
+    this.enableAlert = false;
+
+    // -- Resolve promise of timeout
+    if (this.timeOutPromise) {
+      this.$timeout.cancel(this.timeOutPromise);
+    }
+
+    if (this.callbackClose) {
+      this.callbackClose();
+    }
+  }
+
+  public stopTimer(): void {
+    if (this.timeOutPromise) {
+      this.$timeout.cancel(this.timeOutPromise);
+    }
+  }
+
+  public startTimer(): void {
+    if (this.msToClose) {
+      // just in case
+      this.stopTimer();
+      this.timeOutPromise = this.disposablePromiseService.timeout(this.closeAlert.bind(this), this.$scope, this.msToClose);
+      this.timeOutPromise.finally(() => {
+        this.timeOutPromise = null;
+      });
+    }
+  }
+
+  public getActionText(): string {
+    return this.actionText;
+  }
+
+  public executeAction(): void {
+    this.action();
+  }
+
+  public openSendMessageToAdmin(): void {
+    this.messageToAdminOpen = true;
+  }
+
+  public sendMessageToAdmin(): void {
+    this.closeAlert();
+
+    let request: service.systemErrors.SystemErrorRequest = {
+      error: { name: this.shortText, message: this.moreInfoMessages ? this.moreInfoMessages.join('\n') : '' },
+      username: this.currentUser.name,
+      message: this.messageToAdmin
+    };
+    this.systemErrorsService.informErrorToSystemAdmin(request).then((response: string) => {
+      this.messageToAdmin = '';
+      this.alertService.showAlertSucces(this.$translate.instant('COMMON.ALERT_MODAL.SUCCESS_REPORT_ISSUE'));
+    }, (error: any) => {
+      this.$log.error(error);
+    });
+
+  }
+
+  public getIconTooltip(): string {
+    if (this.moreInfoMessages && this.moreInfoMessages.length > 0) {
+      return 'NOTIFICATION_ICON.ERROR';
+    } else if (this.alertClass === 'alert-danger') {
+      return 'NOTIFICATION_ICON.WARNING';
+    } else {
+      return 'NOTIFICATION_ICON.SUCCESS';
+    }
+  }
+
+  private configureAlert(shortText: string,
+    callbackClose?: () => void,
+    msToClose: number = 6000,
+    moreInfoMessages?: string[],
+    action?: () => void,
+    actionText?: string
+  ): void {
+    this.enableAlert = true;
+    this.showClose = true;
+    this.shortText = shortText;
+    this.msToClose = msToClose;
+    this.moreInfoMessages = moreInfoMessages || null;
+    this.askHelp = null;
+    this.callbackClose = callbackClose || angular.noop;
+    this.action = action || angular.noop;
+    this.actionText = actionText || null;
+    this.messageToAdminOpen = false;
+  }
+
+}

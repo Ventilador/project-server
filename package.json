@@ -4,7 +4,8 @@
   "description": "Project server",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "compile": "tsc --project tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,15 @@
   "bugs": {
     "url": "https://github.com/Ventilador/project-server/issues"
   },
-  "homepage": "https://github.com/Ventilador/project-server#readme"
+  "homepage": "https://github.com/Ventilador/project-server#readme",
+  "dependencies": {
+    "babel-core": "^6.26.0"
+  },
+  "devDependencies": {
+    "@types/babel-core": "^6.25.2",
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.43",
+    "@types/node": "^7.0.43",
+    "chai": "^4.1.2"
+  }
 }

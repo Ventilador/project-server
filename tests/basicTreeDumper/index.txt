@@ -1,0 +1,8 @@
+import {AlertDirective, AlertController} from './alert.directive';
+import AlertService from './alert.service';
+
+export default angular.module('proteusGui.alert', [])
+.service('alertService', AlertService)
+.directive('proteusAlert', () => new AlertDirective())
+.controller('AlertController', AlertController)
+.name;

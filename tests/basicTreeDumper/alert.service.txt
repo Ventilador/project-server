@@ -1,0 +1,46 @@
+import { AlertController } from './alert.directive';
+
+// this service is used to comunicate alert.directive
+// alert.directive call setAlert method to register the controller linked to the directive
+export default class AlertService implements components.alert.IAlertService {
+  private alert: AlertController;
+
+
+  // $timeout is injected because some parts of the app triggers the state of
+  // ui-router with reload:true option. This forces to re-render the page and the alert is never showed
+  /*@ngInject*/
+  constructor(private $timeout: ng.ITimeoutService) { }
+
+  setAlert(alert: AlertController) {
+    this.alert = alert;
+  }
+  showAlertSucces(message: string, callbackClose?: () => void, msToClose?: number) {
+    this.$timeout(() => {
+      this.alert.showAlertSucces(message, callbackClose, msToClose);
+    });
+  }
+  showAlertWarning(message: string, callbackClose?: () => void, msToClose?: number) {
+    this.$timeout(() => {
+      this.alert.showAlertWarning(message, callbackClose, msToClose);
+    });
+  }
+  showAlertError(shortText: string, longText: string, callbackClose?: () => void) {
+    this.$timeout(() => {
+      this.alert.showAlertError(shortText, longText ? [longText] : [], callbackClose);
+    });
+  }
+  showAlertErrors(shortText: string, errorsTexts: string[], callbackClose?: () => void) {
+    this.$timeout(() => {
+      this.alert.showAlertError(shortText, errorsTexts, callbackClose);
+    });
+  }
+  showAlertSuccessWithAction(message: string, action: () => void, actionText: string, callbackClose?: () => void, msToClose?: number) {
+    this.$timeout(() => {
+      this.alert.showAlertSucces(message, callbackClose, msToClose, action, actionText);
+    });
+  }
+
+  closeAlert(): void {
+    this.alert.closeAlert();
+  }
+}

@@ -1,0 +1,193 @@
+import Alert from './index';
+import QuickMock from './../../../../test/mocks/index';
+
+describe('AlertDirective', () => {
+  let controller;
+  let qm: QuickMock = new QuickMock();
+
+  beforeEach(inject(($q: ng.IQService) => {
+    qm = new QuickMock();
+    let systemErrorsServiceMock: any = qm.createSpy('systemErrorsService', ['informErrorToSystemAdmin']);
+    systemErrorsServiceMock.informErrorToSystemAdmin.and.returnValue($q.when('jiraID'));
+
+    controller = qm.service('alertService', ['setAlert', 'showAlertSucces'])
+      .serviceWithSpy('systemErrorsService', systemErrorsServiceMock)
+      .service('currentUser')
+      .service('$translate', ['instant'])
+      .injectProviders('AlertController', Alert);
+
+  }));
+
+  describe('showAlertSuccess', () => {
+    it('should call showAlertSuccess and exec the callback function', () => {
+      let cb = jasmine.createSpy('callback');
+      let message = 'a message';
+      let ms = 3000;
+      controller.showAlertSucces(message, cb, ms);
+      expect(controller.enableAlert).toBe(true);
+
+      controller.$timeout.flush();
+
+      expect(controller.enableAlert).toBe(false);
+      expect(controller.shortText).toBe(message);
+      expect(controller.alertClass).toBe('alert-success');
+      expect(controller.iconAlert).toBe('fa-check-circle-o');
+      expect(controller.msToClose).toBe(ms);
+      expect(controller.showClose).toBe(true);
+      expect(controller.moreInfoMessages).toBeNull();
+      expect(controller.askHelp).toBeNull();
+      expect(cb).toHaveBeenCalled();
+    });
+
+    it('should call showAlertSuccess with an action', () => {
+      let cb = jasmine.createSpy('callback');
+      let message = 'a message';
+      let ms = 3000;
+      let action = jasmine.createSpy('action');
+      let actionText = 'here';
+
+      controller.showAlertSucces(message, cb, ms, action, actionText);
+      controller.$timeout.flush();
+      expect(controller.action).toBe(action);
+      expect(controller.actionText).toBe(actionText);
+    });
+  });
+
+  describe('showAlertWarning', () => {
+    it('should call showAlertWarning and exec the callback function', () => {
+      let cb = jasmine.createSpy('callback');
+      let message = 'a message';
+      let ms = 3000;
+      controller.showAlertWarning(message, cb, ms);
+      expect(controller.enableAlert).toBe(true);
+
+      controller.$timeout.flush();
+
+      expect(controller.enableAlert).toBe(false);
+      expect(controller.shortText).toBe(message);
+      expect(controller.alertClass).toBe('alert-danger');
+      expect(controller.iconAlert).toBe('fa-exclamation-circle');
+      expect(controller.msToClose).toBe(ms);
+      expect(controller.showClose).toBe(true);
+      expect(controller.moreInfoMessages).toBeNull();
+      expect(controller.askHelp).toBeNull();
+      expect(cb).toHaveBeenCalled();
+    });
+  });
+
+  describe('showAlertError', () => {
+    it('should call showAlertError and exec the callback function', () => {
+      let cb = jasmine.createSpy('callback');
+      let message = 'a message';
+      let moreInfoMessages = ['a text', 'another text'];
+      controller.showAlertError(message, moreInfoMessages, cb);
+
+      expect(controller.timeOutPromise).toBeNull();
+      expect(controller.enableAlert).toBeTruthy();
+      expect(controller.alertClass).toBe('alert-danger');
+      expect(controller.iconAlert).toBe('fa-exclamation-circle');
+      expect(controller.shortText).toBe(message);
+      expect(controller.moreInfoMessages).toBe(moreInfoMessages);
+      expect(controller.showClose).toBe(true);
+      expect(controller.moreInfoOpen).toBeFalsy();
+      expect(controller.callbackClose).toBe(cb);
+
+      controller.closeAlert();
+
+      expect(controller.enableAlert).toBeFalsy();
+      expect(cb).toHaveBeenCalled();
+    });
+  });
+
+  describe('changeDescriptionInfo', () => {
+    it('should call changeDescriptionInfo and show more info', () => {
+      controller.moreInfoOpen = false;
+
+      controller.changeDescriptionInfo();
+
+      expect(controller.iconMoreInfo).toBe('fa-angle-up');
+      expect(controller.descriptionInfo).toBe('COMMON.ALERT_MODAL.LESS_INFO');
+    });
+
+    it('should call changeDescriptionInfo and hide more info', () => {
+      controller.moreInfoOpen = true;
+
+      controller.changeDescriptionInfo();
+
+      expect(controller.iconMoreInfo).toBe('fa-angle-down');
+      expect(controller.descriptionInfo).toBe('COMMON.ALERT_MODAL.MORE_INFO');
+    });
+  });
+
+  describe('startTimer', () => {
+    it('should start timer if needed', () => {
+      controller.msToClose = 1000;
+      controller.startTimer();
+      expect(controller.$mocks.$timeout).toBeDefined();
+    });
+  });
+
+  describe('stopTimer', () => {
+    it('should stop timer if it exists', () => {
+      controller.timeOutPromise = {};
+      controller.$mocks.$timeout.cancel = qm.createSpy('cancel');
+      controller.stopTimer();
+      expect(controller.$mocks.$timeout.cancel).toHaveBeenCalledWith(controller.timeOutPromise);
+    });
+  });
+
+  describe('openSendMessageToAdmin', () => {
+    it('should expand message text box', () => {
+      controller.openSendMessageToAdmin();
+      expect(controller.messageToAdminOpen).toBe(true);
+    });
+  });
+
+  describe('sendMessageToAdmin', () => {
+    it('should call mw service', () => {
+      controller.sendMessageToAdmin();
+      expect(controller.systemErrorsService.informErrorToSystemAdmin).toHaveBeenCalled();
+    });
+    it('should clear messageToAdmin if reporting error succeeded', inject(($rootScope: ng.IRootScopeService) => {
+      controller.messageToAdmin = 'a message to admin';
+      controller.sendMessageToAdmin();
+      $rootScope.$apply();
+      expect(controller.messageToAdmin).toBeFalsy();
+    }));
+    it('should show alert success if reporting error succeeded', inject(($rootScope: ng.IRootScopeService) => {
+      controller.sendMessageToAdmin();
+      $rootScope.$apply();
+      expect(controller.alertService.showAlertSucces).toHaveBeenCalled();
+    }));
+  });
+
+  describe('getIconTooltip', () => {
+    it('should return success', () => {
+      let cb = jasmine.createSpy('callback');
+      let message = 'a message';
+      let ms = 3000;
+      controller.showAlertSucces(message, cb, ms);
+      controller.$timeout.flush();
+
+      expect(controller.getIconTooltip()).toBe('NOTIFICATION_ICON.SUCCESS');
+    });
+    it('should return warning', () => {
+      let cb = jasmine.createSpy('callback');
+      let message = 'a message';
+      let ms = 3000;
+      controller.showAlertWarning(message, cb, ms);
+      controller.$timeout.flush();
+
+      expect(controller.getIconTooltip()).toBe('NOTIFICATION_ICON.WARNING');
+    });
+    it('should return error', () => {
+      let cb = jasmine.createSpy('callback');
+      let message = 'a message';
+      let moreInfoMessages = ['a text', 'another text'];
+      controller.showAlertError(message, moreInfoMessages, cb);
+      controller.$timeout.flush();
+
+      expect(controller.getIconTooltip()).toBe('NOTIFICATION_ICON.ERROR');
+    });
+  });
+});

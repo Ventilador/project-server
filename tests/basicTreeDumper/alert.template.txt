@@ -1,0 +1,66 @@
+<div ng-if="alertCtrl.enableAlert" class="proteus-alert proteus-alert-fade-out" role="alert" ng-mouseleave="alertCtrl.startTimer()" ng-mouseenter="alertCtrl.stopTimer()" >
+  <div ng-class="alertCtrl.alertClass" class="alert alert-dismissible fade-in one">
+    <!-- Close button -->
+    <button ng-if="alertCtrl.showClose" type="button" class="close" data-dismiss="alert" aria-label="{{'CLOSE' | translate}}"
+      ng-click="alertCtrl.closeAlert()">
+    <span aria-hidden="true" proteus-tooltip-key="CLOSE">&times;</span>
+  </button>
+
+    <!-- short text -->
+    <p class="main-message">
+      <i class="fa main-icon" ng-class="alertCtrl.iconAlert"
+         proteus-tooltip-key="{{alertCtrl.getIconTooltip()}}">
+      </i>
+      <div class="main-message-wrapper" ng-class="{'add-padding-bottom': alertCtrl.hideFooter}">
+        <div class="alert-short-text" ng-bind-html="alertCtrl.shortText"></div>
+        <a href="#"
+          ng-if="alertCtrl.actionText"
+          ng-click="alertCtrl.executeAction()"
+          ng-bind="alertCtrl.getActionText()"
+          ></a>
+      </div>
+    </p>
+
+    <!-- Description -->
+    <div class="more-info" ng-if="alertCtrl.moreInfoMessages.length > 0">
+      <!--More Info -->
+      <a href ng-click="alertCtrl.changeDescriptionInfo()">
+        <i class="fa" ng-class="alertCtrl.iconMoreInfo" proteus-tooltip-key="{{alertCtrl.moreInfoOpen?'COLLAPSE':'EXPAND'}}"></i>
+        <span ng-bind="alertCtrl.descriptionInfo | translate"></span>
+      </a>
+
+      <!--Errors text-->
+      <div class="more-infotext" ng-if="alertCtrl.moreInfoOpen">
+        <span ng-repeat="errorText in alertCtrl.moreInfoMessages" >
+          <p translate="{{errorText}}"></p>
+        </span>
+      </div>
+
+      <!-- Send message to admin -->
+      <div class="send-message-container" ng-class="{'next-to-info': (!alertCtrl.messageToAdminOpen && !alertCtrl.moreInfoOpen)}">
+        <a href ng-click="alertCtrl.openSendMessageToAdmin()">
+          <span ng-if="!alertCtrl.messageToAdminOpen" translate="COMMON.ALERT_MODAL.REPORT_ISSUE_TO_SUPPORT" class="report-issue-to-support"
+                proteus-tooltip-key="ALERT_MODAL.REPORT_ISSUE_TO_SUPPORT_DESCRIPTION">
+          </span>
+        </a>
+      </div>
+
+      <!-- Message to admin text -->
+      <div class="message-to-admin" ng-if="alertCtrl.messageToAdminOpen">
+        <textarea class="message-text" ng-model="alertCtrl.messageToAdmin" translate translate-attr-placeholder="COMMON.ALERT_MODAL.MESSAGE_PLACEHOLDER"></textarea>
+        <div class="buttons-container">
+          <button ng-show="alertCtrl.messageToAdminOpen" type="button" class="cancel" data-dismiss="alert"
+              translate="CANCEL"
+              ng-click="alertCtrl.closeAlert()">
+          </button>
+          <button ng-show="alertCtrl.messageToAdminOpen" type="button" class="send" data-dismiss="alert"
+              translate="COMMON.ALERT_MODAL.REPORT_ISSUE"
+              ng-click="alertCtrl.sendMessageToAdmin()">
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
