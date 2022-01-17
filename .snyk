@@ -1,0 +1,45 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.22.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:debug:20170905':
+    - babel-core > debug:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-traverse > debug:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-template > babel-traverse > debug:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-helpers > babel-template > babel-traverse > debug:
+        patched: '2022-01-17T14:12:23.930Z'
+  SNYK-JS-LODASH-567746:
+    - babel-core > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-types > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-generator > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-traverse > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-template > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-register > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-generator > babel-types > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-traverse > babel-types > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-template > babel-types > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-template > babel-traverse > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-helpers > babel-template > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-template > babel-traverse > babel-types > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-helpers > babel-template > babel-types > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-helpers > babel-template > babel-traverse > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
+    - babel-core > babel-helpers > babel-template > babel-traverse > babel-types > lodash:
+        patched: '2022-01-17T14:12:23.930Z'
